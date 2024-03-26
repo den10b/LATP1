@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/gofiber/template/html/v2"
 	"log"
 	"os"
 
@@ -43,8 +44,12 @@ func main() {
 		log.Fatalf("Error connecting to the database: %v", err)
 	}
 	defer db.Close()
+	// Инициализируем шаблонизатор
+	engine := html.New("./", ".html")
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
 	s := NewService(db)
 
 	app.Get("/user/:id", s.myHandler)
@@ -76,7 +81,7 @@ func (s *service) myHandler(ctx *fiber.Ctx) error {
 		return ctx.Status(fiber.StatusInternalServerError).SendString("Internal Server Error")
 	}
 
-	return ctx.JSON(fiber.Map{
+	return ctx.Render("index", fiber.Map{
 		"fio":      fio,
 		"avg_ball": avgBall,
 		"cipher":   cipher,
