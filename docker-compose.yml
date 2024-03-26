@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  postgres:
+  pg:
     image: postgres:latest
     container_name: postgres
     restart: always
@@ -14,7 +14,7 @@ services:
     networks:
       - network-1
 
-  web:
+  go:
     build:
       context: .
       dockerfile: Dockerfile
@@ -24,10 +24,11 @@ services:
       DB_NAME: latp1
       DB_USER: den
       DB_PASS: 123321
-      DB_HOST: postgres
+      DB_HOST: pg
       DB_PORT: 5432
+      APP_PORT: 4444
     depends_on:
-      - postgres
+      - pg
     networks:
       - network-1
 
@@ -40,7 +41,7 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
-      - web
+      - go
     networks:
       - network-1
 
