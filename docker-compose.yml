@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: latp1
+      POSTGRES_USER: den
+      POSTGRES_PASSWORD: 123321
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - network-1
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: golang_web
+    restart: always
+    environment:
+      DB_NAME: latp1
+      DB_USER: den
+      DB_PASS: 123321
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      - postgres
+    networks:
+      - network-1
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+    networks:
+      - network-1
+
+volumes:
+  postgres_data:
+
+networks:
+  network-1:
+    driver: bridge
