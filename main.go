@@ -45,19 +45,17 @@ func main() {
 	}
 	defer db.Close()
 	// Инициализируем шаблонизатор
-	engine := html.New("./", ".html")
+	engine := html.New("./static", ".html")
 
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
 	s := NewService(db)
 
-	app.Get("/user/:id", s.myHandler)
+	app.Get("/:id", s.myHandler)
 
 	appPort := os.Getenv("APP_PORT")
-	if appPort == "" {
-		appPort = "3000"
-	}
+
 	portStr := fmt.Sprintf(":%s", appPort)
 
 	log.Fatal(app.Listen(portStr))
@@ -72,7 +70,7 @@ func (s *service) myHandler(ctx *fiber.Ctx) error {
 		cipher  string
 	)
 
-	err := s.db.QueryRow(context.Background(), "SELECT fio, avg_ball, cipher FROM users WHERE id=$1", id).Scan(&fio, &avgBall, &cipher)
+	err := s.db.QueryRow(context.Background(), "SELECT fio, avg_ball, cipher FROM public.students WHERE id=$1", id).Scan(&fio, &avgBall, &cipher)
 	if err != nil {
 		if errors.Is(sql.ErrNoRows, err) {
 			return ctx.Status(fiber.StatusNotFound).SendString("Пользователь не найден")

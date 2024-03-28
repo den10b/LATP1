@@ -1,9 +1,9 @@
-FROM golang:latest
+FROM golang:alpine
 
 WORKDIR /app
 
 COPY . .
 
-RUN go build -o main .
+RUN go build -o /myapp
 
-CMD ["./cmd/main"]
+CMD ["/myapp"]

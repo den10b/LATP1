@@ -3,7 +3,7 @@ version: '3.8'
 services:
   pg:
     image: postgres:latest
-    container_name: postgres
+    container_name: postgres_go
     restart: always
     environment:
       POSTGRES_DB: latp1
@@ -13,7 +13,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - network-1
-
+    ports:
+      - "5411:5432"
   go:
     build:
       context: .
@@ -34,7 +35,7 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: nginx
+    container_name: nginx_go
     restart: always
     ports:
       - "80:80"
